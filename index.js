@@ -15,6 +15,15 @@ const fullUrl = (path = "") => {
   return url + path.replace(/^\/*/, "");
 };
 
+const handleReponse = (err, res, body) => {
+  if (program.json) {
+    console.log(JSON.stringify(err || body));
+  } else {
+    if (err) throw err;
+    console.log(log);
+  }
+};
+
 program
   .version(pkg.version)
   .description(pkg.description)
@@ -46,6 +55,19 @@ program
         console.log(body);
       }
     });
+  });
+
+program
+  .command("create-index")
+  .description("create and index")
+  .action(() => {
+    if (!program.index) {
+      const msg = "No index specified! Use --index <name>";
+      if (!program.json) throw Error(msg);
+      console.log(JSON.stringify({ error: msg }));
+      return;
+    }
+    request.put(fullUrl(), handleReponse);
   });
 
 program.parse(process.argv);
