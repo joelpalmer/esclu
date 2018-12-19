@@ -20,7 +20,7 @@ const handleReponse = (err, res, body) => {
     console.log(JSON.stringify(err || body));
   } else {
     if (err) throw err;
-    console.log(log);
+    console.log(body);
   }
 };
 
