@@ -25,6 +25,11 @@ program
   .option("-i, --index <name>", "which index to use")
   .option("-t, --type <type>", "default type for bulk operations");
 
+program
+    .command('url [path]')
+    .description('generate the URL for the options and path (default is /)')
+    .action((path = '/') => console.log(fullUrl(path)));
+
 program.parse(process.argv);
 
 if (!program.args.filter(arg => typeof arg === "object").length) {
