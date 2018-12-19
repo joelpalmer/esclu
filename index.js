@@ -70,6 +70,15 @@ program
     request.put(fullUrl(), handleReponse);
   });
 
+program
+  .command('list-indices')
+  .alias('li')
+  .description('get a list of indices in this cluser')
+  .action(() => {
+      const path = program.json ? '_all' : '_cat/indices?v';
+      request({url: fullUrl(path), json: program.json}, handleReponse);
+  });
+
 program.parse(process.argv);
 
 if (!program.args.filter(arg => typeof arg === "object").length) {
