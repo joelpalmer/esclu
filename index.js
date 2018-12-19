@@ -4,15 +4,15 @@ const request = require("request");
 const program = require("commander");
 const pkg = require("./package.json");
 
-const fullUrl = (path = '') => {
-    let url = `http://${program.host}:${program.port}/`;
-    if (program.index) {
-        url += program.index + '/';
-        if (program.type) {
-            url += program.type + '/';
-        }
+const fullUrl = (path = "") => {
+  let url = `http://${program.host}:${program.port}/`;
+  if (program.index) {
+    url += program.index + "/";
+    if (program.type) {
+      url += program.type + "/";
     }
-    return url + path.replace(/^\/*/,'');
+  }
+  return url + path.replace(/^\/*/, "");
 };
 
 program
@@ -26,9 +26,27 @@ program
   .option("-t, --type <type>", "default type for bulk operations");
 
 program
-    .command('url [path]')
-    .description('generate the URL for the options and path (default is /)')
-    .action((path = '/') => console.log(fullUrl(path)));
+  .command("url [path]")
+  .description("generate the URL for the options and path (default is /)")
+  .action((path = "/") => console.log(fullUrl(path)));
+
+program
+  .command("get [path]")
+  .description("perform an HTTP GET request for path (default is /")
+  .action((path = "") => {
+    const options = {
+      url: fullUrl(path),
+      json: program.json
+    };
+    request(options, (err, res, body) => {
+      if (program.json) {
+        console.log(JSON.stringify(err || body));
+      } else {
+        if (err) throw err;
+        console.log(body);
+      }
+    });
+  });
 
 program.parse(process.argv);
 
