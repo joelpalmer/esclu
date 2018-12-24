@@ -108,6 +108,25 @@ program
     });
   });
 
+program
+  .command('query [queries...]')
+  .alias('q')
+  .description('perform an Elasticsearc query')
+  .action((queries = []) => {
+    const options = {
+      url: fullUrl('_search'),
+      json: program.json,
+      qs: {},
+    };
+    if (queries && queries.length) {
+      options.qs.q = queries.join('');
+    }
+    if (program.filter) {
+      options.qs._source = program.filter;
+    }
+    request(options, handleReponse);
+  });
+
 program.parse(process.argv);
 
 if (!program.args.filter(arg => typeof arg === "object").length) {
