@@ -32,7 +32,8 @@ program
   .option("-p, --port <number>", "port number [9200]", "9200")
   .option("-j, --json", "format output as JSON")
   .option("-i, --index <name>", "which index to use")
-  .option("-t, --type <type>", "default type for bulk operations");
+  .option("-t, --type <type>", "default type for bulk operations")
+  .option("-f, --filter <filter>", "source filter for the query results");
 
 program
   .command("url [path]")
@@ -80,8 +81,8 @@ program
   });
 
 program
-  .command('bulk <file>')
-  .description('read & perform bulk options from the specified file')
+  .command("bulk <file>")
+  .description("read & perform bulk options from the specified file")
   .action(file => {
     fs.stat(file, (err, stats) => {
       if (err) {
@@ -92,11 +93,11 @@ program
         throw err;
       }
       const options = {
-        url: fullUrl('_bulk'),
+        url: fullUrl("_bulk"),
         json: true,
         headers: {
-          'content-length': stats.size,
-          'content-type': 'application/json'
+          "content-length": stats.size,
+          "content-type": "application/json"
         }
       };
       const req = request.post(options);
