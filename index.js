@@ -71,12 +71,40 @@ program
   });
 
 program
-  .command('list-indices')
-  .alias('li')
-  .description('get a list of indices in this cluser')
+  .command("list-indices")
+  .alias("li")
+  .description("get a list of indices in this cluser")
   .action(() => {
-      const path = program.json ? '_all' : '_cat/indices?v';
-      request({url: fullUrl(path), json: program.json}, handleReponse);
+    const path = program.json ? "_all" : "_cat/indices?v";
+    request({ url: fullUrl(path), json: program.json }, handleReponse);
+  });
+
+program
+  .command('bulk <file>')
+  .description('read & perform bulk options from the specified file')
+  .action(file => {
+    fs.stat(file, (err, stats) => {
+      if (err) {
+        if (program.json) {
+          console.log(JSON.stringify(err));
+          return;
+        }
+        throw err;
+      }
+      const options = {
+        url: fullUrl('_bulk'),
+        json: true,
+        headers: {
+          'content-length': stats.size,
+          'content-type': 'application/json'
+        }
+      };
+      const req = request.post(options);
+
+      const stream = fs.createReadStream(file);
+      stream.pipe(req);
+      req.pipe(process.stdout);
+    });
   });
 
 program.parse(process.argv);
